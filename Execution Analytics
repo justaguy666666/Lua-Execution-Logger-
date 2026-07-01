@@ -1,0 +1,201 @@
+-- CREDITS TO https://www.youtube.com/@x13-m5w
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local Stats = game:GetService("Stats")
+
+local WebhookURL = "SET YOUR WEBHOOK HERE"
+
+local player = Players.LocalPlayer
+local placeId = game.PlaceId
+local gameName = MarketplaceService:GetProductInfo(placeId).Name
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local root = character:WaitForChild("HumanoidRootPart")
+
+local accountAge = player.AccountAge
+local membership = tostring(player.MembershipType)
+local playerCount = #Players:GetPlayers()
+
+local health = math.floor(humanoid.Health)
+local maxHealth = math.floor(humanoid.MaxHealth)
+
+local walkSpeed = humanoid.WalkSpeed
+local jumpPower = humanoid.JumpPower
+
+local teamName = player.Team and player.Team.Name or "None"
+
+local position = string.format(
+    "X: %.1f\nY: %.1f\nZ: %.1f",
+    root.Position.X,
+    root.Position.Y,
+    root.Position.Z
+)
+
+local ping = "N/A"
+pcall(function()
+    ping = math.floor(
+        Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
+    ) .. " ms"
+end)
+
+local physicsFPS = "N/A"
+pcall(function()
+    physicsFPS = math.floor(workspace:GetRealPhysicsFPS())
+end)
+
+local privateServer = game.PrivateServerId ~= "" and "Yes" or "No"
+
+local executor = "Unknown"
+pcall(function()
+    if identifyexecutor then
+        executor = identifyexecutor()
+    end
+end)
+
+local executionTime = os.date("%Y-%m-%d %H:%M:%S UTC")
+
+local data = {
+    username = "SET YOUR DESIRED NAME HERE",
+    embeds = {{
+        title = "🎮 Game Execution",
+        color = 65280,
+
+        fields = {
+
+            {
+                name = "👤 Username",
+                value = player.Name,
+                inline = true
+            },
+
+            {
+                name = "🆔 User ID",
+                value = tostring(player.UserId),
+                inline = true
+            },
+
+            {
+                name = "📅 Account Age",
+                value = tostring(accountAge) .. " days",
+                inline = true
+            },
+
+            {
+                name = "⭐ Membership",
+                value = membership,
+                inline = true
+            },
+
+            {
+                name = "🎮 Game",
+                value = gameName,
+                inline = false
+            },
+
+            {
+                name = "📍 Place ID",
+                value = tostring(placeId),
+                inline = true
+            },
+
+            {
+                name = "📦 Job ID",
+                value = game.JobId ~= "" and game.JobId or "Studio",
+                inline = true
+            },
+
+            {
+                name = "👥 Players",
+                value = tostring(playerCount),
+                inline = true
+            },
+
+            {
+                name = "❤️ Health",
+                value = health .. "/" .. maxHealth,
+                inline = true
+            },
+
+            {
+                name = "🚶 WalkSpeed",
+                value = tostring(walkSpeed),
+                inline = true
+            },
+
+            {
+                name = "🦘 JumpPower",
+                value = tostring(jumpPower),
+                inline = true
+            },
+
+            {
+                name = "🏳️ Team",
+                value = teamName,
+                inline = true
+            },
+
+            {
+                name = "📶 Ping",
+                value = tostring(ping),
+                inline = true
+            },
+
+            {
+                name = "⚙️ Physics FPS",
+                value = tostring(physicsFPS),
+                inline = true
+            },
+
+            {
+                name = "🔒 Private Server",
+                value = privateServer,
+                inline = true
+            },
+
+            {
+                name = "💻 Executor",
+                value = executor,
+                inline = true
+            },
+
+            {
+                name = "📍 Character Position",
+                value = position,
+                inline = false
+            },
+
+            {
+                name = "🕒 Executed At",
+                value = executionTime,
+                inline = false
+            }
+
+        },
+
+        footer = {
+            text = "Who Executed"
+        },
+
+        timestamp = DateTime.now():ToIsoDate()
+    }}
+}
+
+local success, response = pcall(function()
+    return request({
+        Url = WebhookURL,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = HttpService:JSONEncode(data)
+    })
+end)
+
+if success then
+    print("Successfuly Executed YOUR SCRIPT NAME", response.StatusCode)
+else
+    warn("Failed To Execute", response)
+end

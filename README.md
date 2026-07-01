@@ -25,3 +25,6 @@ Execution Time (UTC)
 
 You would basically edit the code & obfuscate it then make a new repository & create a new file, paste the obfuscated code in & post then click on "raw" button then copy link & paste it in between the quotation marks loadstring(game:HttpGet("YOUR RAW CODE LINK GOES HERE"))() then put that loadstring in the bottom of your script before obfuscating your script.
 (Dont forget to test it before obfuscation to make sure it works.)
+
+<img width="647" height="666" alt="image" src="https://github.com/user-attachments/assets/38a7f282-ac30-4427-8f63-3c5812a94afa" />
+
